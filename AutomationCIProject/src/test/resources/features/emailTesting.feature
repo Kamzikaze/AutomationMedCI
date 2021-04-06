@@ -28,11 +28,11 @@ Feature: Testing mailchimp registration function
     And I want to enter a password
     And I tick the box
     Then I press the sign up button
-    And I check the result
+    And I check the result <failMessage>
 
     Examples: 
-      |type1 			|type2			|
-      |"regular" 	|"regular"	|
-      |"regular"	|"long"			|
-      |"regular"	|"exists" 	|
-      |"empty"		|"regular" 	|
+      |type1 			|type2			|failMessage																																					|
+      |"regular" 	|"regular"	|""																																										|
+      |"regular"	|"long"			|"Enter a value less than 100 characters long"																				|
+      |"regular"	|"exists" 	|"Another user with this username already exists. Maybe it's your evil twin. Spooky."	|
+      |"empty"		|"regular" 	|"Please enter a value"																																|
