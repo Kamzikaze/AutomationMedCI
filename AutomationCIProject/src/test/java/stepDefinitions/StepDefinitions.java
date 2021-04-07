@@ -150,7 +150,7 @@ public class StepDefinitions {
 		JavascriptExecutor Js = (JavascriptExecutor) driver;
 		Js.executeScript("arguments[0].click();", element);
 		//eftersom att elementet rör på sig eller är gömt bakom något så kan ett vanligt "click" ha svårt för att klicka ordentligt, 
-		//därför kör vi ett javascript istället som klickar åt oss.
+		//därför kör vi ett javascript klick istället som klickar åt oss.
 		
 	}
 
