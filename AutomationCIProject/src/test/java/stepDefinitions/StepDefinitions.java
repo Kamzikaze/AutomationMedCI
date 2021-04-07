@@ -143,7 +143,7 @@ public class StepDefinitions {
 	void waitAndClick(By thingToClick)
 	{
 		WebDriverWait wait = new WebDriverWait(driver, 10);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#onetrust-accept-btn-handler")));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(thingToClick));
 		
 		WebElement element = driver.findElement(thingToClick);
 		
