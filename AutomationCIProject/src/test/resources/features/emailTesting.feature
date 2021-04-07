@@ -17,7 +17,7 @@
 ## (Comments)
 #Sample Feature Definition Template
 @tag
-Feature: Testing mailchimp registration function
+Feature: Testing the mailchimp registration function
 
   Background: Website is open
 	Given I have opened the webite
