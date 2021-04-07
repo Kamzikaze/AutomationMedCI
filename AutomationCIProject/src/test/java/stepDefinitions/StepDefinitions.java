@@ -4,11 +4,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -27,17 +25,9 @@ public class StepDefinitions {
 		System.setProperty("webdriver.chrome.driver", "D:\\Programs\\SeleniumDriver\\chromedriver.exe");
 		driver = new ChromeDriver();
 		driver.get("https://login.mailchimp.com/signup/");
-
-		WebDriverWait wait = new WebDriverWait(driver, 10);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#onetrust-accept-btn-handler")));
+	
 		//vi väntar med att fortsätta till vi kan se cookies elementet.
-
-		WebElement acceptCookiesButton = driver.findElement(By.cssSelector("#onetrust-accept-btn-handler"));
-
-		JavascriptExecutor Js = (JavascriptExecutor) driver;
-		Js.executeScript("arguments[0].click();", acceptCookiesButton);
-		//eftersom att elementet rör på sig så kan ett vanligt "click" ha svårt för att klicka ordentligt, 
-		//därför kör vi ett javascript istället som klickar åt oss.
+		waitAndClick(By.cssSelector("#onetrust-accept-btn-handler"));
 
 		System.out.println("Before...");
 	}
@@ -102,12 +92,8 @@ public class StepDefinitions {
 	}
 
 	@Then("I press the sign up button")
-	public void i_press_the_sign_up_button() {
-		WebElement signUpButton = driver.findElement(By.cssSelector("#create-account"));
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", signUpButton);
-		//vissa element på hemsidan döljer ibland knappen för att signa upp, med JSExecutor 
-		//så kommer klicket alltid hamna på rätt element.
+	public void i_press_the_sign_up_button() {		
+		waitAndClick(By.cssSelector("#create-account"));
 		
 		System.out.println("Sign up clicked...");
 	}
@@ -150,6 +136,22 @@ public class StepDefinitions {
 		}
 
 		return strToSendBack;
+	}
+	
+	//eftersom att staffan vill att denna funktion ska finnas med så sätter vi väl in den :P
+	//här tar vi emot sättet att identifiera elementet vi först vill vänta på, och sedan klickar vi på det.
+	void waitAndClick(By thingToClick)
+	{
+		WebDriverWait wait = new WebDriverWait(driver, 10);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#onetrust-accept-btn-handler")));
+		
+		WebElement element = driver.findElement(thingToClick);
+		
+		JavascriptExecutor Js = (JavascriptExecutor) driver;
+		Js.executeScript("arguments[0].click();", element);
+		//eftersom att elementet rör på sig eller är gömt bakom något så kan ett vanligt "click" ha svårt för att klicka ordentligt, 
+		//därför kör vi ett javascript istället som klickar åt oss.
+		
 	}
 
 }
