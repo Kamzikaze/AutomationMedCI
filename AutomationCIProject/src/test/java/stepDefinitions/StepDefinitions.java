@@ -10,9 +10,11 @@ import java.util.Random;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -25,10 +27,9 @@ public class StepDefinitions {
 		System.setProperty("webdriver.chrome.driver", "D:\\Programs\\SeleniumDriver\\chromedriver.exe");
 		driver = new ChromeDriver();
 		driver.get("https://login.mailchimp.com/signup/");
-	
-		//vi väntar med att fortsätta till vi kan se cookies elementet.
-		waitAndClick(By.cssSelector("#onetrust-accept-btn-handler"));
 
+		driver.manage().window().maximize();
+		
 		System.out.println("Before...");
 	}
 
@@ -43,7 +44,8 @@ public class StepDefinitions {
 		if (type.equalsIgnoreCase("empty")) {
 			emailToEnter = "";
 		}
-		//de här if-satserna väljer om vi ska skapa en randomized string för epostadressen eller om fältet ska lämnas tomt.
+		// de här if-satserna väljer om vi ska skapa en randomized string för
+		// epostadressen eller om fältet ska lämnas tomt.
 
 		emailTextBox.sendKeys(emailToEnter);
 
@@ -64,8 +66,9 @@ public class StepDefinitions {
 		if (type.equalsIgnoreCase("exists")) {
 			usernameToEnter = "iAlreadyMadeThisUserOnceBefore";
 		}
-		//likt if-satserna för epost så gör dessa 3 samma sak, randomiserade strings för usernames 
-		//beroende på vad som står i scenario outline.
+		// likt if-satserna för epost så gör dessa 3 samma sak, randomiserade strings
+		// för usernames
+		// beroende på vad som står i scenario outline.
 
 		usernameTextBox.sendKeys(usernameToEnter);
 
@@ -77,24 +80,25 @@ public class StepDefinitions {
 		WebElement passwordTextBox = driver.findElement(By.cssSelector("#new_password"));
 
 		passwordTextBox.sendKeys("Pwd1234!");
-		//här skickar vi ett lösenord som uppfyller alla krav som hemsidan har.
-		
+		// här skickar vi ett lösenord som uppfyller alla krav som hemsidan har.
+
 		System.out.println("Password entered...");
 	}
 
 	@Given("I tick the box")
 	public void i_tick_the_box() {
-		WebElement tickBox = driver.findElement(By.cssSelector("#marketing_newsletter"));
-		tickBox.click();
-		//vi vill inte ha hemsidans spam så vi bockar i rutan som säger att vi inte vill ha deras utskick.
+		// vi vill inte ha hemsidans spam så vi bockar i rutan som säger att vi inte vill ha deras utskick.
+		waitAndClick(By.cssSelector("#marketing_newsletter"));
 		
 		System.out.println("Box ticked...");
 	}
 
 	@Then("I press the sign up button")
-	public void i_press_the_sign_up_button() {		
-		waitAndClick(By.cssSelector("#create-account"));
+	public void i_press_the_sign_up_button() {
 		
+		waitAndClick(By.cssSelector("#onetrust-accept-btn-handler")); //accepting cookies
+		waitAndClick(By.cssSelector("#create-account")); //signing up
+
 		System.out.println("Sign up clicked...");
 	}
 
@@ -110,13 +114,15 @@ public class StepDefinitions {
 				System.out.println(checkString);
 			}
 		}
-		//i scenario outline så har vi definerat vilka felmeddelande som vi förväntar oss få för varje scenario,
-		//här kontrollerar vi att dem stämmer genom en if-sats som fångar alla felmeddelanden i en lista och ser 
-		//om något av dem stämmer överrens med vårt förväntade resultat.
+		// i scenario outline så har vi definerat vilka felmeddelande som vi förväntar
+		// oss få för varje scenario,
+		// här kontrollerar vi att dem stämmer genom en if-sats som fångar alla
+		// felmeddelanden i en lista och ser
+		// om något av dem stämmer överrens med vårt förväntade resultat.
 
 		assertEquals(failMessage, checkString);
-		
-		//här har vi de olika felmeddelandena.
+
+		// här har vi de olika felmeddelandena.
 		// Enter a value less than 100 characters long
 		// Another user with this username already exists. Maybe it's your evil twin.
 		// Spooky.
@@ -124,8 +130,9 @@ public class StepDefinitions {
 
 	}
 
-	//min funktion som tar emot en int som symboliserar antal tecken att randomisera, 
-	//och skickar tillbaka den nya randomiserade strängen.
+	// min funktion som tar emot en int som symboliserar antal tecken att
+	// randomisera,
+	// och skickar tillbaka den nya randomiserade strängen.
 	String randomizeString(int length) {
 
 		Random rnd = new Random(System.currentTimeMillis());
@@ -137,21 +144,18 @@ public class StepDefinitions {
 
 		return strToSendBack;
 	}
-	
-	//eftersom att staffan vill att denna funktion ska finnas med så sätter vi väl in den :P
-	//här tar vi emot sättet att identifiera elementet vi först vill vänta på, och sedan klickar vi på det.
-	void waitAndClick(By thingToClick)
-	{
-		WebDriverWait wait = new WebDriverWait(driver, 10);
-		wait.until(ExpectedConditions.visibilityOfElementLocated(thingToClick));
-		
-		WebElement element = driver.findElement(thingToClick);
-		
-		JavascriptExecutor Js = (JavascriptExecutor) driver;
-		Js.executeScript("arguments[0].click();", element);
-		//eftersom att elementet rör på sig eller är gömt bakom något så kan ett vanligt "click" ha svårt för att klicka ordentligt, 
-		//därför kör vi ett javascript klick istället som klickar åt oss.
-		
+
+
+	// här tar vi emot sättet att identifiera elementet vi först vill vänta på, och
+	// sedan klickar vi på det.
+	void waitAndClick(By by) {
+
+		(new WebDriverWait(driver, 10)).until(ExpectedConditions.elementToBeClickable(by));
+		WebElement element = driver.findElement(by);
+
+		 JavascriptExecutor Js = (JavascriptExecutor) driver;
+		 Js.executeScript("arguments[0].click();", element);
+
 	}
 
 }
